@@ -16,8 +16,8 @@ string rsBenchmark = input.symbol("SPY", "RS Benchmark", group="Relative Strengt
 var string txtSize = panelSize == "tiny" ? size.tiny : panelSize == "small" ? size.small : size.normal
 
 // === COLORS ===
-color bgColor     = color.new(#1a1a2e, 100)
-color headerBg    = color.new(#16213e, 85)
+color bgColor     = color.new(#1a1a2e, 30)
+color headerBg    = color.new(#16213e, 15)
 color labelColor  = color.new(#8899aa, 0)
 color valueColor  = color.new(#e0e0e0, 0)
 color greenColor  = color.new(#26a69a, 0)
@@ -138,7 +138,7 @@ plot(0, "Base", color=color.new(color.white, 100), display=display.none)
 // === WIDE HORIZONTAL TABLE ===
 // 20 columns × 7 rows — spreads across the full pane width
 if barstate.islast
-    var table p = table.new(position.top_left, 20, 8, bgcolor=bgColor, border_color=color.new(#334455, 100), border_width=0)
+    var table p = table.new(position.bottom_left, 20, 8, bgcolor=bgColor, border_color=color.new(#334455, 100), border_width=0)
 
     // === ROW 0: HEADER BAR ===
     // Company info spread wide
