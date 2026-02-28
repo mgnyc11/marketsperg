@@ -1,8 +1,8 @@
 //@version=6
-indicator("MarketMerge v1.0", overlay=true, max_labels_count=100)
+indicator("MarketSperg v1.0", overlay=true, max_labels_count=100)
 
 // ============================================================================
-// MARKETMERGE v1.0 — CANSLIM Data Panel + Chart Overlay
+// MARKETSPERG v1.0 — CANSLIM Data Panel + Chart Overlay
 // IBD-style ratings, earnings, RS line, S&P overlay, CANSLIM checklist
 // ============================================================================
 
@@ -41,8 +41,14 @@ color blueColor    = color.new(#2196f3, 0)
 color yellowColor  = color.new(#ff9800, 0)
 
 // === SYMINFO (v6 safe) ===
-string tickerId   = syminfo.tickerid
-string tickerName = syminfo.ticker
+string tickerId      = syminfo.tickerid
+string tickerName    = syminfo.ticker
+string companyDesc   = syminfo.description
+string sectorName    = syminfo.sector
+string industryName  = syminfo.industry
+string exchangeName  = syminfo.prefix
+string currencyName  = syminfo.currency
+float  mktCapVal     = request.financial(tickerId, "MARKET_CAP", "FQ")
 
 // === MOVING AVERAGES ===
 float ema21 = ta.ema(close, 21)
@@ -182,7 +188,7 @@ fmtVal(float val, string fmt) =>
 
 // === DATA PANEL TABLE ===
 if barstate.islast
-    var table panel = table.new(position.bottom_left, 4, 35, bgcolor=bgColor, border_color=borderColor, border_width=1)
+    var table panel = table.new(position.bottom_left, 4, 40, bgcolor=bgColor, border_color=borderColor, border_width=1)
 
     int row = 0
 
@@ -200,6 +206,36 @@ if barstate.islast
     table.cell(panel, 1, row, "Avg " + str.tostring(volMA50 / 1e6, "#.#") + "M", text_color=labelColor, text_size=txtSize)
     table.cell(panel, 2, row, "Off Hi " + fmtPct(offHigh52), text_color=getPctColor(offHigh52), text_size=txtSize)
     table.cell(panel, 3, row, "ATR " + str.tostring(atrPct, "#.#") + "%", text_color=labelColor, text_size=txtSize)
+    row += 1
+
+    // === COMPANY PROFILE ===
+    table.cell(panel, 0, row, "── PROFILE ──", text_color=blueColor, text_size=txtSize, bgcolor=headerBg)
+    table.cell(panel, 1, row, "", bgcolor=headerBg)
+    table.cell(panel, 2, row, "", bgcolor=headerBg)
+    table.cell(panel, 3, row, "", bgcolor=headerBg)
+    row += 1
+
+    // Company name (truncate if too long)
+    string descShort = str.length(companyDesc) > 30 ? str.substring(companyDesc, 0, 27) + "..." : companyDesc
+    table.cell(panel, 0, row, descShort, text_color=valueColor, text_size=txtSize)
+    table.cell(panel, 1, row, "", text_size=txtSize)
+    table.cell(panel, 2, row, exchangeName, text_color=labelColor, text_size=txtSize)
+    table.cell(panel, 3, row, currencyName, text_color=labelColor, text_size=txtSize)
+    row += 1
+
+    table.cell(panel, 0, row, "Sector", text_color=labelColor, text_size=txtSize)
+    string sectorShort = str.length(sectorName) > 20 ? str.substring(sectorName, 0, 17) + "..." : sectorName
+    table.cell(panel, 1, row, sectorShort, text_color=valueColor, text_size=txtSize)
+    table.cell(panel, 2, row, "Mkt Cap", text_color=labelColor, text_size=txtSize)
+    string mktCapStr = na(mktCapVal) ? "N/A" : mktCapVal >= 1e12 ? "$" + str.tostring(mktCapVal / 1e12, "#.##") + "T" : mktCapVal >= 1e9 ? "$" + str.tostring(mktCapVal / 1e9, "#.#") + "B" : "$" + str.tostring(mktCapVal / 1e6, "#.#") + "M"
+    table.cell(panel, 3, row, mktCapStr, text_color=valueColor, text_size=txtSize)
+    row += 1
+
+    string indShort = str.length(industryName) > 30 ? str.substring(industryName, 0, 27) + "..." : industryName
+    table.cell(panel, 0, row, "Industry", text_color=labelColor, text_size=txtSize)
+    table.cell(panel, 1, row, indShort, text_color=valueColor, text_size=txtSize)
+    table.cell(panel, 2, row, "", text_size=txtSize)
+    table.cell(panel, 3, row, "", text_size=txtSize)
     row += 1
 
     // === RATINGS ===
