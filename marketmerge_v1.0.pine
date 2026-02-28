@@ -41,15 +41,11 @@ color blueColor    = color.new(#2196f3, 0)
 color yellowColor  = color.new(#ff9800, 0)
 
 // === SYMINFO (v6 safe) ===
-string tickerId      = syminfo.tickerid
-string tickerName    = syminfo.ticker
-string companyDesc   = syminfo.description
-string sectorName    = syminfo.sector
-string industryName  = syminfo.industry
-string exchangeName  = syminfo.prefix
-string currencyName  = syminfo.currency
-float  sharesOut     = request.financial(tickerId, "TOTAL_SHARES_OUTSTANDING", "FQ")
-float  mktCapVal     = not na(sharesOut) ? close * sharesOut : na
+string tickerId   = syminfo.tickerid
+string tickerName = syminfo.ticker
+
+// Financial data for market cap
+float sharesOut = request.financial(tickerId, "TOTAL_SHARES_OUTSTANDING", "FQ")
 
 // === MOVING AVERAGES ===
 float ema21 = ta.ema(close, 21)
@@ -216,23 +212,29 @@ if barstate.islast
     table.cell(panel, 3, row, "", bgcolor=headerBg)
     row += 1
 
-    // Company name (truncate if too long)
-    string descShort = str.length(companyDesc) > 30 ? str.substring(companyDesc, 0, 27) + "..." : companyDesc
+    // Company name
+    string descRaw = syminfo.description
+    string descShort = str.length(descRaw) > 30 ? str.substring(descRaw, 0, 27) + "..." : descRaw
     table.cell(panel, 0, row, descShort, text_color=valueColor, text_size=txtSize)
     table.cell(panel, 1, row, "", text_size=txtSize)
-    table.cell(panel, 2, row, exchangeName, text_color=labelColor, text_size=txtSize)
-    table.cell(panel, 3, row, currencyName, text_color=labelColor, text_size=txtSize)
+    table.cell(panel, 2, row, syminfo.prefix, text_color=labelColor, text_size=txtSize)
+    table.cell(panel, 3, row, syminfo.currency, text_color=labelColor, text_size=txtSize)
     row += 1
 
+    // Sector + Market Cap
+    string secRaw = syminfo.sector
+    string secShort = str.length(secRaw) > 20 ? str.substring(secRaw, 0, 17) + "..." : secRaw
+    float mktCap = not na(sharesOut) ? close * sharesOut : na
+    string mktCapStr = na(mktCap) ? "N/A" : mktCap >= 1e12 ? "$" + str.tostring(mktCap / 1e12, "#.##") + "T" : mktCap >= 1e9 ? "$" + str.tostring(mktCap / 1e9, "#.#") + "B" : "$" + str.tostring(mktCap / 1e6, "#.#") + "M"
     table.cell(panel, 0, row, "Sector", text_color=labelColor, text_size=txtSize)
-    string sectorShort = str.length(sectorName) > 20 ? str.substring(sectorName, 0, 17) + "..." : sectorName
-    table.cell(panel, 1, row, sectorShort, text_color=valueColor, text_size=txtSize)
+    table.cell(panel, 1, row, secShort, text_color=valueColor, text_size=txtSize)
     table.cell(panel, 2, row, "Mkt Cap", text_color=labelColor, text_size=txtSize)
-    string mktCapStr = na(mktCapVal) ? "N/A" : mktCapVal >= 1e12 ? "$" + str.tostring(mktCapVal / 1e12, "#.##") + "T" : mktCapVal >= 1e9 ? "$" + str.tostring(mktCapVal / 1e9, "#.#") + "B" : "$" + str.tostring(mktCapVal / 1e6, "#.#") + "M"
     table.cell(panel, 3, row, mktCapStr, text_color=valueColor, text_size=txtSize)
     row += 1
 
-    string indShort = str.length(industryName) > 30 ? str.substring(industryName, 0, 27) + "..." : industryName
+    // Industry
+    string indRaw = syminfo.industry
+    string indShort = str.length(indRaw) > 30 ? str.substring(indRaw, 0, 27) + "..." : indRaw
     table.cell(panel, 0, row, "Industry", text_color=labelColor, text_size=txtSize)
     table.cell(panel, 1, row, indShort, text_color=valueColor, text_size=txtSize)
     table.cell(panel, 2, row, "", text_size=txtSize)
