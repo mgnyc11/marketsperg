@@ -21,9 +21,9 @@ string rsBenchmark = input.symbol("SPY", "RS Benchmark", group=grp_rs)
 var string txtSize = panelSize == "tiny" ? size.tiny : panelSize == "small" ? size.small : size.normal
 
 // === PANEL COLORS ===
-color bgColor      = color.new(#e8e8e8, 0)
-color borderColor  = color.new(#b0b0b0, 0)
-color headerBg     = color.new(#d0d0d0, 0)
+color bgColor      = color.new(#ffffff, 0)
+color borderColor  = color.new(#cccccc, 0)
+color headerBg     = color.new(#f0f0f0, 0)
 color labelColor   = color.new(#555555, 0)
 color valueColor   = color.new(#111111, 0)
 color greenColor   = color.new(#26a69a, 0)
