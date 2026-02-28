@@ -48,7 +48,8 @@ string sectorName    = syminfo.sector
 string industryName  = syminfo.industry
 string exchangeName  = syminfo.prefix
 string currencyName  = syminfo.currency
-float  mktCapVal     = request.financial(tickerId, "MARKET_CAP", "FQ")
+float  sharesOut     = request.financial(tickerId, "TOTAL_SHARES_OUTSTANDING", "FQ")
+float  mktCapVal     = not na(sharesOut) ? close * sharesOut : na
 
 // === MOVING AVERAGES ===
 float ema21 = ta.ema(close, 21)
