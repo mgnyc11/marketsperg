@@ -50,7 +50,8 @@ float spyNorm = not na(spyPctChg) and stockRef > 0 ? stockRef * spyPctChg : na
 plot(showSPYoverlay ? spyNorm : na, "S&P 500", color=color.new(#888888, 60), linewidth=1, style=plot.style_line)
 
 // === RS LINE NEW HIGH MARKER (current bar only) ===
-float rsPriorHigh = ta.highest(rsLine[1], 252)
+// Uses 50-bar lookback — catches RS breakouts from recent trend, not all-time
+float rsPriorHigh = ta.highest(rsLine[1], 50)
 bool rsNewHigh = barstate.islast and not na(rsLine) and not na(rsPriorHigh) and rsLine > rsPriorHigh
 
 if showRSline and rsNewHigh
